@@ -1,24 +1,40 @@
-import firebase_admin
-from firebase_admin import firestore
+"""
+Standalone Firestore connectivity check. Not part of the API contract —
+this exists purely so you can confirm ADC + Firestore access works
+before relying on it inside advisory.py etc.
+"""
 
-try:
-    print("🔄 Connecting to Firestore via Application Default Credentials...")
-    
-    # Initialize using your backend Project ID wrapper
-    firebase_admin.initialize_app(options={
-        'projectId': 'project-4fd7204c-297a-4c1b-b21'
-    })
-    
-    db = firestore.client()
-    
-    # Write a quick data checkpoint document
-    doc_ref = db.collection("test_connections").document("local_laptop_test")
-    doc_ref.set({
-        "status": "success",
-        "message": "Local laptop workspace verified via gcloud CLI ADC!"
-    })
-    
-    print("\n🔥 SUCCESS: Firestore connection verified!")
+import datetime
+import logging
 
-except Exception as e:
-    print(f"\n❌ CONNECTION FAILED: {str(e)}")
+from fastapi import APIRouter, HTTPException
+
+from app.firebase import get_db
+
+logger = logging.getLogger("agrisetu.test_connection")
+
+router = APIRouter()
+
+
+@router.post("/api/test-connection")
+async def test_connection():
+    db = get_db()
+    if db is None:
+        raise HTTPException(
+            status_code=500,
+            detail="Firestore client is None — ADC likely isn't set up. "
+            "Run `gcloud auth application-default login` and restart the server.",
+        )
+
+    try:
+        doc_ref = db.collection("test_connections").document()
+        doc_ref.set(
+            {
+                "message": "hello from local machine via ADC",
+                "created_at": datetime.datetime.utcnow().isoformat() + "Z",
+            }
+        )
+        return {"status": "ok", "doc_id": doc_ref.id}
+    except Exception as e:
+        logger.exception("Firestore write failed")
+        raise HTTPException(status_code=500, detail=f"Firestore write failed: {e}")

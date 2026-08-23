@@ -24,7 +24,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import ALLOWED_ORIGINS, ENV
 from app.firebase import init_firebase, get_db, DISEASE_REPORTS_COLLECTION
 from app.advisory import router as advisory_router
-#from app.test_connection import router as test_connection_router
+from app.test_connection import router as test_connection_router
 from app import disease, voice, cooperation
 from app.models import (
     DiseaseDiagnosisResponse,
@@ -53,7 +53,7 @@ app.add_middleware(
 app.include_router(advisory_router)
 
 # --- Temporary ADC/Firestore connectivity check — safe to leave in ---
-#app.include_router(test_connection_router)
+app.include_router(test_connection_router)
 
 
 @app.on_event("startup")

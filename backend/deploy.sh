@@ -21,7 +21,7 @@ set -euo pipefail
 # builds from the Dockerfile's directory as the build context.
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
-PROJECT_ID="${PROJECT_ID:-agrisetu-hackathon}"
+PROJECT_ID="${PROJECT_ID:-project-4fd7204c-297a-4c1b-b21}"
 REGION="${REGION:-asia-south1}"
 SERVICE_NAME="${SERVICE_NAME:-agrisetu-backend}"
 
@@ -33,6 +33,20 @@ fi
 
 ALLOWED_ORIGINS="${ALLOWED_ORIGINS:-https://agrisetu-frontend.web.app,http://localhost:5173}"
 
+# --set-env-vars uses commas to separate different KEY=VALUE pairs, but
+# ALLOWED_ORIGINS itself contains commas (multiple URLs) — that breaks
+# gcloud's parsing. A YAML env-vars file sidesteps the ambiguity entirely.
+ENV_VARS_FILE="$(mktemp)"
+trap 'rm -f "${ENV_VARS_FILE}"' EXIT
+
+cat > "${ENV_VARS_FILE}" <<EOF
+GEMINI_API_KEY: "${GEMINI_API_KEY}"
+GEMINI_MODEL: "${GEMINI_MODEL:-gemini-3.6-flash}"
+FIREBASE_PROJECT_ID: "${PROJECT_ID}"
+ALLOWED_ORIGINS: "${ALLOWED_ORIGINS}"
+ENV: "production"
+EOF
+
 echo "Deploying ${SERVICE_NAME} to Cloud Run (project=${PROJECT_ID}, region=${REGION})..."
 
 gcloud run deploy "${SERVICE_NAME}" \
@@ -41,9 +55,9 @@ gcloud run deploy "${SERVICE_NAME}" \
   --region "${REGION}" \
   --platform managed \
   --allow-unauthenticated \
-  --set-env-vars "GEMINI_API_KEY=${GEMINI_API_KEY},GEMINI_MODEL=${GEMINI_MODEL:-gemini-2.0-flash},FIREBASE_PROJECT_ID=${PROJECT_ID},ALLOWED_ORIGINS=${ALLOWED_ORIGINS},ENV=production" \
+  --env-vars-file "${ENV_VARS_FILE}" \
   --memory 512Mi \
-  --timeout 60
+  --timeout 60s
 
 echo ""
 echo "Done. Grant the Cloud Run runtime service account Firestore access if you haven't:"
