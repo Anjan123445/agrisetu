@@ -7,15 +7,15 @@ farmers.
 ## Repo structure
 
 ```
-/frontend        Person 1
-/backend         Person 2 (owns main.py/advisory.py; imports Person 3 & 4's modules)
+/frontend        Giridhar Prabhu
+/backend         Anjan Srivatsav Garudadri (owns main.py/advisory.py; imports Aamir Mohammed Khan & Chirag G K's modules)
   /app/main.py         FastAPI app, CORS, route wiring
   /app/advisory.py     POST /api/advisory — fully built
-  /app/soil_weather.py Person 3 (stub today, real Earth Engine/weather Day 2)
-  /app/disease.py      Person 3 (stub today, real model Day 2)
-  /app/voice.py        Person 4 (stub today, real STT/TTS Day 2)
-  /app/cooperation.py  Person 4 (stub today, real aggregation Day 2)
-/docs            Shared: pitch deck, README, demo script (Person 4 owns final assembly)
+  /app/soil_weather.py Aamir Mohammed Khan (stub today, real Earth Engine/weather Day 2)
+  /app/disease.py      Aamir Mohammed Khan (stub today, real model Day 2)
+  /app/voice.py        Chirag G K (stub today, real STT/TTS Day 2)
+  /app/cooperation.py  Chirag G K (stub today, real aggregation Day 2)
+/docs            Shared: pitch deck, README, demo script ( Chirag G K owns final assembly)
 /mock-data       Shared: JSON fixtures matching the API contract (§4)
 ```
 
