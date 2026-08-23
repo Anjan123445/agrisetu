@@ -32,6 +32,9 @@ from app.models import (
     CooperationDashboardResponse,
 )
 
+from dotenv import load_dotenv
+load_dotenv()
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("agrisetu.main")
 
