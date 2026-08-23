@@ -1,4 +1,3 @@
-# AgriSetu — Frontend
 
 React + Vite + Tailwind. Mobile-first, built against mocked API responses so it runs standalone before the backend is live.
 

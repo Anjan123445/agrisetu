@@ -1,0 +1,18 @@
+{
+  "request_note": "multipart/form-data: image=<file>, location=<JSON string or form fields>, language=<string>",
+  "request_example_fields": {
+    "location": "{\"lat\": 15.3, \"lng\": 75.7, \"state\": \"Karnataka\", \"district\": \"Belagavi\"}",
+    "language": "kn"
+  },
+  "response": {
+    "disease_name": "Leaf Blight",
+    "confidence": 0.77,
+    "description": "Fungal infection causing brown lesions on leaves, spreading fastest in humid conditions.",
+    "remedy": "ಶಿಲೀಂಧ್ರನಾಶಕ (ತಾಮ್ರ ಆಧಾರಿತ) ಸಿಂಪಡಿಸಿ ಮತ್ತು ಸೋಂಕಿತ ಎಲೆಗಳನ್ನು ತೆಗೆದುಹಾಕಿ.",
+    "prevention_tips": [
+      "Avoid overhead irrigation late in the day",
+      "Ensure adequate spacing between plants for airflow",
+      "Remove and destroy infected plant debris after harvest"
+    ]
+  }
+}
