@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme {
+  /* Palette — rooted in field, husk and monsoon light, not a generic AI cream */
+  --color-ink: #232920;         /* near-black, warm green-black for body text */
+  --color-husk: #F1EAD6;        /* warm pale husk background */
+  --color-husk-deep: #E6DCC0;   /* card / section background one step deeper */
+  --color-leaf: #3F6B2D;        /* primary green — action, brand */
+  --color-leaf-deep: #2C4C1F;   /* pressed / hover state */
+  --color-marigold: #E0932C;    /* accent — highlights, confidence bars */
+  --color-earth: #8A5A3B;       /* secondary accent — soil references */
+  --color-sky: #6C93A6;         /* weather references */
+  --color-alert: #B4432F;       /* errors, disease flags */
+
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-body: "Manrope", "Noto Sans Devanagari", "Noto Sans Kannada", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+html {
+  background: var(--color-husk);
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+}
+
+/* Visible keyboard focus everywhere, incl. custom components */
+:focus-visible {
+  outline: 3px solid var(--color-marigold);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

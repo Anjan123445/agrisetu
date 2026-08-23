@@ -1,0 +1,12 @@
+{
+  "disease_name": "Leaf Blight",
+  "confidence": 0.77,
+  "description": "A fungal infection causing brown, irregular lesions on leaves that spread outward from the leaf tip, common in humid conditions after rainfall.",
+  "remedy": "Spray a copper-based fungicide (e.g. copper oxychloride 0.3%) in the early morning or evening. Remove and destroy severely affected leaves to slow spread. Repeat after 10 days if symptoms persist.",
+  "prevention_tips": [
+    "Avoid overhead irrigation; water at the base of the plant instead.",
+    "Ensure proper spacing between plants for airflow.",
+    "Rotate crops each season to break the disease cycle.",
+    "Remove crop residue after harvest instead of leaving it in the field."
+  ]
+}

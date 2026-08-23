@@ -1,0 +1,10 @@
+{
+  "state_summaries": [
+    { "state": "Karnataka", "top_crops": ["Groundnut", "Ragi"], "avg_soil_health": 0.60, "active_farmers": 128 },
+    { "state": "Maharashtra", "top_crops": ["Cotton", "Soybean"], "avg_soil_health": 0.54, "active_farmers": 214 },
+    { "state": "Punjab", "top_crops": ["Wheat", "Rice"], "avg_soil_health": 0.71, "active_farmers": 342 },
+    { "state": "Tamil Nadu", "top_crops": ["Paddy", "Sugarcane"], "avg_soil_health": 0.58, "active_farmers": 176 },
+    { "state": "Uttar Pradesh", "top_crops": ["Sugarcane", "Wheat"], "avg_soil_health": 0.49, "active_farmers": 401 },
+    { "state": "Andhra Pradesh", "top_crops": ["Chilli", "Paddy"], "avg_soil_health": 0.62, "active_farmers": 189 }
+  ]
+}

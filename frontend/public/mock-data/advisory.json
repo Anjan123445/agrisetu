@@ -1,0 +1,30 @@
+{
+  "recommended_crops": [
+    {
+      "name": "Groundnut",
+      "confidence": 0.82,
+      "reason": "Soil moisture and NDVI trend favor groundnut over the next cropping window; light rain forecast supports early pod development."
+    },
+    {
+      "name": "Ragi (Finger Millet)",
+      "confidence": 0.71,
+      "reason": "Low water demand suits the moderate soil moisture reading, and district-level yield data shows strong performance this season."
+    },
+    {
+      "name": "Pigeon Pea (Tur)",
+      "confidence": 0.63,
+      "reason": "Good rotation crop after cotton; improves nitrogen levels for the next sugarcane cycle."
+    }
+  ],
+  "soil_summary": {
+    "moisture": "moderate",
+    "ph_estimate": 6.5,
+    "ndvi": 0.41
+  },
+  "weather_summary": {
+    "forecast_7day": "Light rain expected mid-week, clearing by the weekend",
+    "temp_avg_c": 29
+  },
+  "advisory_text": "Based on your field near Belagavi, soil moisture is moderate and the NDVI trend (0.41) shows healthy vegetation recovery since your last cotton harvest. With light rain expected over the next week, this is a good window to prepare land for groundnut sowing. Avoid heavy irrigation until after the rain passes. Consider ragi as a low-risk alternative if rainfall is delayed.",
+  "audio_url": "https://storage.agrisetu.mock/advisory_kn.mp3"
+}
