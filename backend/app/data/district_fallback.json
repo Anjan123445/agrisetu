@@ -1,0 +1,39 @@
+{
+  "_meta": {
+    "purpose": "Curated fallback values used when live Earth Engine calls fail or time out. Values are realistic seasonal approximations (not live pulls) derived from typical NDVI/soil profiles reported for these districts in agricultural literature and public soil health card summaries. Good enough for demo purposes; NOT a substitute for live data in production.",
+    "ndvi_scale": "0.0 (bare soil/water) to 1.0 (dense healthy vegetation), typical cropland range 0.2-0.6",
+    "ph_scale": "standard 0-14 soil pH scale, most Indian cropland falls 5.5-8.5"
+  },
+  "districts": {
+    "belagavi": {"state": "Karnataka", "ndvi": 0.41, "moisture": "moderate", "ph_estimate": 6.5, "soil_type": "black cotton"},
+    "bengaluru rural": {"state": "Karnataka", "ndvi": 0.35, "moisture": "low", "ph_estimate": 6.2, "soil_type": "red sandy loam"},
+    "mysuru": {"state": "Karnataka", "ndvi": 0.44, "moisture": "moderate", "ph_estimate": 6.4, "soil_type": "red loam"},
+    "dharwad": {"state": "Karnataka", "ndvi": 0.38, "moisture": "moderate", "ph_estimate": 7.1, "soil_type": "black cotton"},
+    "ludhiana": {"state": "Punjab", "ndvi": 0.55, "moisture": "high", "ph_estimate": 7.4, "soil_type": "alluvial"},
+    "amritsar": {"state": "Punjab", "ndvi": 0.52, "moisture": "high", "ph_estimate": 7.6, "soil_type": "alluvial"},
+    "nashik": {"state": "Maharashtra", "ndvi": 0.39, "moisture": "moderate", "ph_estimate": 6.8, "soil_type": "black cotton"},
+    "pune": {"state": "Maharashtra", "ndvi": 0.34, "moisture": "low", "ph_estimate": 6.9, "soil_type": "red-black mixed"},
+    "nagpur": {"state": "Maharashtra", "ndvi": 0.37, "moisture": "moderate", "ph_estimate": 7.0, "soil_type": "black cotton"},
+    "indore": {"state": "Madhya Pradesh", "ndvi": 0.43, "moisture": "moderate", "ph_estimate": 7.3, "soil_type": "black cotton"},
+    "bhopal": {"state": "Madhya Pradesh", "ndvi": 0.40, "moisture": "moderate", "ph_estimate": 7.2, "soil_type": "black cotton"},
+    "guntur": {"state": "Andhra Pradesh", "ndvi": 0.46, "moisture": "high", "ph_estimate": 7.5, "soil_type": "alluvial-deltaic"},
+    "krishna": {"state": "Andhra Pradesh", "ndvi": 0.48, "moisture": "high", "ph_estimate": 7.6, "soil_type": "alluvial-deltaic"},
+    "coimbatore": {"state": "Tamil Nadu", "ndvi": 0.36, "moisture": "low", "ph_estimate": 7.0, "soil_type": "red loam"},
+    "thanjavur": {"state": "Tamil Nadu", "ndvi": 0.53, "moisture": "high", "ph_estimate": 7.4, "soil_type": "alluvial-deltaic"},
+    "erode": {"state": "Tamil Nadu", "ndvi": 0.33, "moisture": "low", "ph_estimate": 7.1, "soil_type": "red sandy loam"},
+    "ahmedabad": {"state": "Gujarat", "ndvi": 0.30, "moisture": "low", "ph_estimate": 7.8, "soil_type": "alluvial-saline"},
+    "rajkot": {"state": "Gujarat", "ndvi": 0.32, "moisture": "low", "ph_estimate": 7.6, "soil_type": "medium black"},
+    "jaipur": {"state": "Rajasthan", "ndvi": 0.24, "moisture": "low", "ph_estimate": 8.0, "soil_type": "arid sandy"},
+    "lucknow": {"state": "Uttar Pradesh", "ndvi": 0.45, "moisture": "moderate", "ph_estimate": 7.3, "soil_type": "alluvial"},
+    "varanasi": {"state": "Uttar Pradesh", "ndvi": 0.47, "moisture": "high", "ph_estimate": 7.5, "soil_type": "alluvial"},
+    "patna": {"state": "Bihar", "ndvi": 0.49, "moisture": "high", "ph_estimate": 7.7, "soil_type": "alluvial"},
+    "burdwan": {"state": "West Bengal", "ndvi": 0.56, "moisture": "high", "ph_estimate": 6.6, "soil_type": "alluvial"}
+  },
+  "national_default": {
+    "state": "India",
+    "ndvi": 0.38,
+    "moisture": "moderate",
+    "ph_estimate": 6.8,
+    "soil_type": "mixed cropland"
+  }
+}
