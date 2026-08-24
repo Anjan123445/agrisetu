@@ -49,9 +49,9 @@ from collections import defaultdict, Counter
 
 from google.cloud import firestore
 
-logger = logging.getLogger(__name__)
+from app.firebase import get_db
 
-_db = firestore.Client(project=os.environ.get("GCP_PROJECT_ID"))
+logger = logging.getLogger(__name__)
 
 FARMER_ID_FIELDS = ("farmer_id", "farmerId", "user_id", "userId")
 
@@ -108,6 +108,12 @@ def get_cooperation_summary() -> dict:
             ...
         ]}
     """
+
+    _db = get_db()
+    if _db is None:
+        logger.warning("Firestore not configured — cooperation dashboard returning empty summary.")
+        return {"state_summaries": []}
+    
     crop_counters = defaultdict(Counter)
     soil_scores = defaultdict(list)
     farmer_ids_by_state = defaultdict(set)

@@ -17,6 +17,8 @@ this file needs to change.
 """
 
 import logging
+import json
+from typing import Optional
 
 from fastapi import FastAPI, UploadFile, Form, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -74,8 +76,6 @@ async def healthz():
 
 # ---------------------------------------------------------------------------
 # POST /api/disease-diagnosis  (multipart: image, location, language)
-# STUB until teammate A's real model lands — wired end-to-end so the
-# frontend can integrate today.
 # ---------------------------------------------------------------------------
 
 @app.post("/api/disease-diagnosis", response_model=DiseaseDiagnosisResponse)
@@ -83,17 +83,34 @@ async def post_disease_diagnosis(
     image: UploadFile = File(...),
     location: str = Form(...),
     language: str = Form(...),
+    device_id: Optional[str] = Form(None), # <-- Accept device_id from frontend
 ):
     image_bytes = await image.read()
-    result = await disease.diagnose(image_bytes, {"raw": location}, language)
+
+    try:
+        location_dict = json.loads(location)
+        if not isinstance(location_dict, dict):
+            location_dict = {}
+    except (json.JSONDecodeError, TypeError):
+        logger.warning("post_disease_diagnosis: could not parse location field %r", location)
+        location_dict = {}
+
+    try:
+        result = await disease.diagnose(image_bytes, location_dict, language)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.exception("Disease diagnosis failed")
+        raise HTTPException(status_code=502, detail=f"Disease diagnosis failed: {e}")
 
     db = get_db()
     if db is not None:
         try:
             db.collection(DISEASE_REPORTS_COLLECTION).add(
                 {
-                    "location": location,
+                    "location": location_dict,
                     "language": language,
+                    "farmer_id": device_id,  # <-- Map device_id to farmer_id
                     **result,
                 }
             )
@@ -114,7 +131,15 @@ async def post_voice_query(
     language: str = Form(...),
 ):
     audio_bytes = await audio.read()
-    result = await voice.handle_voice_query(audio_bytes, language)
+
+    try:
+        result = await voice.handle_voice_query(audio_bytes, language)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.exception("Voice query failed")
+        raise HTTPException(status_code=502, detail=f"Voice query failed: {e}")
+
     return VoiceQueryResponse(**result)
 
 

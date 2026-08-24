@@ -27,8 +27,8 @@ parse `location["raw"]` as JSON if present (falls back to no location
 context if that fails), so it still works today, but the real fix is in
 main.py: parse the location JSON string BEFORE calling diagnose(), so
 this function gets an actual dict matching models.Location. Flagged
-separately — not something this file can fully fix on its own since the
-bug is in how main.py builds the argument.
+separately — not something this file can fully fix on its own since the bug
+is in how main.py builds the argument.
 
 Unlike a "fill in something plausible" fallback, this module does NOT
 invent a disease diagnosis if Gemini fails — a wrong diagnosis could
@@ -86,6 +86,11 @@ def _guess_mime_type(image_bytes: bytes) -> str:
     for magic, mime in _SUPPORTED_MIME_TYPES.items():
         if image_bytes.startswith(magic):
             return mime
+            
+    # Guard: Flag unsupported formats (like HEIC) instead of silently failing
+    # or blindly assuming JPEG. Browsers usually re-encode camera captures, 
+    # but direct file uploads might not.
+    logger.warning("Unsupported or unknown image magic bytes detected. Defaulting to image/jpeg, but this may fail.")
     return "image/jpeg"
 
 

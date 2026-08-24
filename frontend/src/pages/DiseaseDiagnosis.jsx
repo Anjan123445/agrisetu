@@ -1,5 +1,6 @@
-import { useRef, useState } from "react";
-import PageShell, { } from "../components/Layout";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import PageShell from "../components/Layout";
 import FurrowDivider from "../components/FurrowDivider";
 import { useApp } from "../context/AppContext";
 import { getDiseaseDiagnosis } from "../api/api";
@@ -7,12 +8,19 @@ import { LoadingState, ErrorState } from "./AdvisoryDashboard";
 
 export default function DiseaseDiagnosis() {
   const { t, language, location } = useApp();
+  const navigate = useNavigate(); // Initialize navigate
+  
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const inputRef = useRef(null);
+
+  // Guard: redirect to location picker if location context is missing
+  useEffect(() => {
+    if (!location) navigate("/location");
+  }, [location, navigate]);
 
   function handleFile(e) {
     const f = e.target.files?.[0];
@@ -27,6 +35,9 @@ export default function DiseaseDiagnosis() {
     if (!file) return;
     setLoading(true);
     setError(null);
+    
+    // Retrieve deviceId safely if you added it to AppContext earlier, 
+    // or leave as is based on how you implemented the API params!
     try {
       const res = await getDiseaseDiagnosis({ image: file, location, language });
       setResult(res);

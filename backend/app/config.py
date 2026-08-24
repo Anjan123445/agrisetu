@@ -16,6 +16,7 @@ GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.6-flash")
 # Auth is via Application Default Credentials everywhere — no key file
 # config needed. See app/firebase.py for details.
 FIREBASE_PROJECT_ID = os.getenv("FIREBASE_PROJECT_ID", "")
+FIREBASE_STORAGE_BUCKET = os.getenv("FIREBASE_STORAGE_BUCKET", "")
 
 # --- CORS ---
 # Comma-separated list of allowed origins, e.g.
