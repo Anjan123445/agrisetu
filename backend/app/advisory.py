@@ -117,6 +117,7 @@ def _write_advisory_to_firestore(request: AdvisoryRequest, response: AdvisoryRes
     try:
         db.collection(ADVISORIES_COLLECTION).add(
             {
+                "farmer_id": request.device_id,  # <-- Map device_id to farmer_id
                 "location": request.location.model_dump(),
                 "language": request.language,
                 "crop_history": request.crop_history,
@@ -125,7 +126,7 @@ def _write_advisory_to_firestore(request: AdvisoryRequest, response: AdvisoryRes
                 "weather_summary": response.weather_summary.model_dump(),
                 "advisory_text": response.advisory_text,
                 "audio_url": response.audio_url,
-                "created_at": datetime.datetime.utcnow().isoformat() + "Z",
+                "created_at": datetime.datetime.now(datetime.UTC).isoformat().replace("+00:00", "Z"),
             }
         )
     except Exception:

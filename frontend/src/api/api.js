@@ -41,26 +41,24 @@ async function realGet(path) {
 }
 
 /**
- * POST /api/advisory
- * @param {{location: {lat:number,lng:number,state:string,district:string}, language:string, crop_history:string[]}} payload
+ * POST /api/disease-diagnosis (multipart: image, location, language, device_id)
+ * @param {{image: File, location: object, language: string, deviceId?: string}} params
  */
-export async function getAdvisory(payload) {
-  if (USE_MOCKS) return loadMock("advisory.json");
-  return realPost("/api/advisory", payload);
-}
-
-/**
- * POST /api/disease-diagnosis (multipart: image, location, language)
- * @param {{image: File, location: object, language: string}} params
- */
-export async function getDiseaseDiagnosis({ image, location, language }) {
+export async function getDiseaseDiagnosis({ image, location, language, deviceId }) {
   if (USE_MOCKS) return loadMock("disease-diagnosis.json");
   const form = new FormData();
   form.append("image", image);
   form.append("location", JSON.stringify(location));
   form.append("language", language);
+  
+  // Append device_id if provided
+  if (deviceId) {
+    form.append("device_id", deviceId);
+  }
+  
   return realPost("/api/disease-diagnosis", form, true);
 }
+
 
 /**
  * POST /api/voice-query (multipart: audio, language)

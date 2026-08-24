@@ -7,13 +7,14 @@ teammate wiring it up differently.
 import json
 import logging
 
-import google.generativeai as genai
-
+from google import genai
 from app.config import GEMINI_API_KEY, GEMINI_MODEL
 
 logger = logging.getLogger("agrisetu.gemini")
 
 _configured = False
+
+_client = None
 
 
 def _ensure_configured():
@@ -27,27 +28,36 @@ def _ensure_configured():
         genai.configure(api_key=GEMINI_API_KEY)
         _configured = True
 
+def generate_text(prompt: str) -> str:
+    client = _client_instance()
+    response = client.models.generate_content(
+        model=GEMINI_MODEL,
+        contents=prompt,
+    )
+    return (response.text or "").strip()
+
+
+def _client_instance():
+    global _client
+    if _client is None:
+        if not GEMINI_API_KEY:
+            raise RuntimeError("GEMINI_API_KEY is not set.")
+        _client = genai.Client(api_key=GEMINI_API_KEY)
+    return _client
 
 def generate_json(prompt: str, response_schema: dict | None = None) -> dict:
-    """
-    Call Gemini asking for strict JSON output matching response_schema
-    (a JSON-schema-like dict, Gemini's structured output format), parse
-    and return it as a dict. Raises on malformed output rather than
-    silently returning something that doesn't match the contract.
-    """
-    _ensure_configured()
+    client = _client_instance()
+    config = {"response_mime_type": "application/json"}
+    if response_schema:
+        config["response_schema"] = response_schema
+    response = client.models.generate_content(model=GEMINI_MODEL, contents=prompt, config=config)
+    return json.loads(response.text)
 
-    model = genai.GenerativeModel(GEMINI_MODEL)
-
-    generation_config = {"response_mime_type": "application/json"}
-    if response_schema is not None:
-        generation_config["response_schema"] = response_schema
-
-    response = model.generate_content(prompt, generation_config=generation_config)
-
-    text = response.text
-    try:
-        return json.loads(text)
-    except json.JSONDecodeError:
-        logger.error("Gemini returned non-JSON output: %s", text[:500])
-        raise RuntimeError("Gemini response was not valid JSON")
+def generate_json_with_image(prompt, image_bytes, mime_type, response_schema=None) -> dict:
+    client = _client_instance()
+    config = {"response_mime_type": "application/json"}
+    if response_schema:
+        config["response_schema"] = response_schema
+    part = genai.types.Part.from_bytes(data=image_bytes, mime_type=mime_type)
+    response = client.models.generate_content(model=GEMINI_MODEL, contents=[prompt, part], config=config)
+    return json.loads(response.text)

@@ -30,6 +30,7 @@ class AdvisoryRequest(BaseModel):
     location: Location
     language: str = Field(..., description="ISO-ish language code, e.g. 'kn', 'hi', 'en'")
     crop_history: List[str] = Field(default_factory=list)
+    device_id: Optional[str] = None
 
 
 class RecommendedCrop(BaseModel):
