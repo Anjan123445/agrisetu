@@ -120,44 +120,50 @@ def get_cooperation_summary() -> dict:
     doc_counts_by_state = defaultdict(int)  # fallback if no farmer id ever seen
     any_farmer_id_seen = False
 
-    # --- advisories: crops, soil health, farmer ids ---
-    for doc in _db.collection("advisories").stream():
-        data = doc.to_dict() or {}
-        state = (data.get("location") or {}).get("state")
-        if not state:
-            continue  # skip malformed docs rather than fail the whole dashboard
+    try:
+        # --- advisories: crops, soil health, farmer ids ---
+        for doc in _db.collection("advisories").stream():
+            data = doc.to_dict() or {}
+            state = (data.get("location") or {}).get("state")
+            if not state:
+                continue  # skip malformed docs rather than fail the whole dashboard
 
-        doc_counts_by_state[state] += 1
+            doc_counts_by_state[state] += 1
 
-        recommended_crops = data.get("recommended_crops") or []
-        if recommended_crops and isinstance(recommended_crops, list):
-            top_crop = recommended_crops[0].get("name")
-            if top_crop:
-                crop_counters[state][top_crop] += 1
+            recommended_crops = data.get("recommended_crops") or []
+            if recommended_crops and isinstance(recommended_crops, list):
+                top_crop = recommended_crops[0].get("name")
+                if top_crop:
+                    crop_counters[state][top_crop] += 1
 
-        if isinstance(data.get("soil_health_score"), (int, float)):
-            soil_scores[state].append(data["soil_health_score"])
-        elif data.get("soil_summary"):
-            soil_scores[state].append(_derive_soil_health_score(data["soil_summary"]))
+            if isinstance(data.get("soil_health_score"), (int, float)):
+                soil_scores[state].append(data["soil_health_score"])
+            elif data.get("soil_summary"):
+                soil_scores[state].append(_derive_soil_health_score(data["soil_summary"]))
 
-        farmer_id = _get_farmer_id(data)
-        if farmer_id:
-            any_farmer_id_seen = True
-            farmer_ids_by_state[state].add(farmer_id)
+            farmer_id = _get_farmer_id(data)
+            if farmer_id:
+                any_farmer_id_seen = True
+                farmer_ids_by_state[state].add(farmer_id)
 
-    # --- diseaseReports: farmer ids + doc counts only ---
-    for doc in _db.collection("diseaseReports").stream():
-        data = doc.to_dict() or {}
-        state = (data.get("location") or {}).get("state")
-        if not state:
-            continue
+        # --- diseaseReports: farmer ids + doc counts only ---
+        for doc in _db.collection("diseaseReports").stream():
+            data = doc.to_dict() or {}
+            state = (data.get("location") or {}).get("state")
+            if not state:
+                continue
 
-        doc_counts_by_state[state] += 1
+            doc_counts_by_state[state] += 1
 
-        farmer_id = _get_farmer_id(data)
-        if farmer_id:
-            any_farmer_id_seen = True
-            farmer_ids_by_state[state].add(farmer_id)
+            farmer_id = _get_farmer_id(data)
+            if farmer_id:
+                any_farmer_id_seen = True
+                farmer_ids_by_state[state].add(farmer_id)
+    except Exception:
+        logger.exception(
+            "Firestore unavailable — cooperation dashboard returning empty summary."
+        )
+        return {"state_summaries": []}
 
     if not any_farmer_id_seen:
         logger.warning(

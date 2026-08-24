@@ -6,7 +6,7 @@
 // no other code changes needed since every screen calls through this file.
 // ---------------------------------------------------------------------------
 
-export const USE_MOCKS = true;
+export const USE_MOCKS = false;
 
 // Set this to your teammate's backend once it's live, e.g. "https://agrisetu-api.onrender.com"
 export const BASE_URL = "http://localhost:8080";
@@ -39,6 +39,16 @@ async function realGet(path) {
   if (!res.ok) throw new Error(`Request to ${path} failed: ${res.status}`);
   return res.json();
 }
+
+/**
+ * POST /api/advisory
+ * @param {{location: {lat:number,lng:number,state:string,district:string}, language:string, crop_history:string[]}} payload
+ */
+export async function getAdvisory(payload) {
+  if (USE_MOCKS) return loadMock("advisory.json");
+  return realPost("/api/advisory", payload);
+}
+
 
 /**
  * POST /api/disease-diagnosis (multipart: image, location, language, device_id)

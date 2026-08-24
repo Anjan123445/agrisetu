@@ -150,5 +150,5 @@ async def post_voice_query(
 
 @app.get("/api/cooperation-dashboard", response_model=CooperationDashboardResponse)
 async def get_cooperation_dashboard():
-    summaries = cooperation.get_state_summaries()
-    return CooperationDashboardResponse(state_summaries=summaries)
+    summary = cooperation.get_cooperation_summary()
+    return CooperationDashboardResponse(state_summaries=summary["state_summaries"])
