@@ -112,14 +112,16 @@ export default function VoiceQuery() {
                 {t.voiceResponseLabel}
               </h3>
               <p className="mt-1.5 text-sm leading-relaxed">{result.response_text}</p>
-              <button
-                type="button"
-                onClick={togglePlay}
-                className="mt-3 flex items-center gap-2 rounded-full bg-marigold px-4 py-2 text-xs font-bold text-leaf-deep active:scale-95"
-              >
-                <span aria-hidden="true">{playing ? "❚❚" : "▶"}</span>
-                {t.voicePlayResponse}
-              </button>
+              {result.response_audio_url && (
+                <button
+                  type="button"
+                  onClick={togglePlay}
+                  className="mt-3 flex items-center gap-2 rounded-full bg-marigold px-4 py-2 text-xs font-bold text-leaf-deep active:scale-95"
+                >
+                  <span aria-hidden="true">{playing ? "❚❚" : "▶"}</span>
+                  {t.voicePlayResponse}
+                </button>
+              )}
               <audio
                 ref={audioRef}
                 src={result.response_audio_url}

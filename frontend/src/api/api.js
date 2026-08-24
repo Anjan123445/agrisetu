@@ -30,7 +30,16 @@ async function realPost(path, body, isMultipart = false) {
     headers: isMultipart ? undefined : { "Content-Type": "application/json" },
     body: isMultipart ? body : JSON.stringify(body),
   });
-  if (!res.ok) throw new Error(`Request to ${path} failed: ${res.status}`);
+  if (!res.ok) {
+    let detail = "";
+    try {
+      const errorBody = await res.json();
+      detail = errorBody.detail ? `: ${errorBody.detail}` : "";
+    } catch {
+      // Keep the HTTP status when the server did not return JSON.
+    }
+    throw new Error(`Request to ${path} failed: ${res.status}${detail}`);
+  }
   return res.json();
 }
 

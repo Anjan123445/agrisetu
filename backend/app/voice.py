@@ -11,6 +11,7 @@ from datetime import timedelta
 import logging
 import os
 import uuid
+from urllib.parse import quote
 
 import firebase_admin
 from dotenv import load_dotenv
@@ -80,6 +81,7 @@ def _transcribe(audio_bytes: bytes, language: str) -> str:
     config = speech.RecognitionConfig(
         encoding=_SPEECH_ENCODING,
         language_code=_bcp47(stt_lang),
+        sample_rate_hertz=48000,
         model="latest_long",
         enable_automatic_punctuation=True,
     )
@@ -93,6 +95,8 @@ def _transcribe(audio_bytes: bytes, language: str) -> str:
 
 
 def _translate_text(text: str, target_lang: str, source_lang: str = None) -> str:
+    if source_lang == target_lang:
+        return text
     _ensure_clients()
     result = _translate_client.translate(text, target_language=target_lang, source_language=source_lang)
     return result["translatedText"]
@@ -121,17 +125,33 @@ def _synthesize_speech(text: str, language: str) -> bytes:
 
 def _upload_audio(audio_content: bytes, language: str) -> str:
     _ensure_clients()
+    if not FIREBASE_STORAGE_BUCKET:
+        logger.warning("FIREBASE_STORAGE_BUCKET is not configured; skipping audio upload.")
+        return ""
+
     bucket = storage.bucket()
     filename = f"voice-replies/{language}/{uuid.uuid4().hex}.mp3"
     blob = bucket.blob(filename)
     blob.upload_from_string(audio_content, content_type="audio/mpeg")
 
-    # Generate a signed URL expiring in 1 hour instead of making the file permanently public
-    return blob.generate_signed_url(
-        version="v4",
-        expiration=timedelta(hours=1),
-        method="GET",
-    )
+    try:
+        # Service-account credentials can sign an expiring URL.
+        return blob.generate_signed_url(
+            version="v4",
+            expiration=timedelta(hours=1),
+            method="GET",
+        )
+    except AttributeError:
+        # Local ADC user credentials cannot sign URLs. Firebase download tokens
+        # provide a browser-readable URL without requiring a private key.
+        download_token = uuid.uuid4().hex
+        blob.metadata = {"firebaseStorageDownloadTokens": download_token}
+        blob.patch()
+        encoded_name = quote(filename, safe="")
+        return (
+            f"https://firebasestorage.googleapis.com/v0/b/{bucket.name}/o/"
+            f"{encoded_name}?alt=media&token={download_token}"
+        )
 
 
 def handle_voice_query(audio_bytes: bytes, language: str) -> dict:

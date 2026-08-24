@@ -18,10 +18,12 @@ this file needs to change.
 
 import logging
 import json
+import asyncio
 from typing import Optional
 
 from fastapi import FastAPI, UploadFile, Form, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from google.api_core.exceptions import PermissionDenied
 
 from app.config import ALLOWED_ORIGINS, ENV
 from app.firebase import init_firebase, get_db, DISEASE_REPORTS_COLLECTION
@@ -99,6 +101,17 @@ async def post_disease_diagnosis(
         result = await disease.diagnose(image_bytes, location_dict, language)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except PermissionDenied as e:
+        logger.exception("Voice query Google Cloud permission denied")
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "Google Speech access is not enabled for the configured project "
+                "or the current account lacks serviceusage.services.use. "
+                "Grant roles/serviceusage.serviceUsageConsumer and enable "
+                "Speech-to-Text, then retry."
+            ),
+        ) from e
     except Exception as e:
         logger.exception("Disease diagnosis failed")
         raise HTTPException(status_code=502, detail=f"Disease diagnosis failed: {e}")
@@ -133,7 +146,9 @@ async def post_voice_query(
     audio_bytes = await audio.read()
 
     try:
-        result = await voice.handle_voice_query(audio_bytes, language)
+        result = await asyncio.to_thread(
+            voice.handle_voice_query, audio_bytes, language
+        )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
